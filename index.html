@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080b10">
+
+    <title>My Scooter</title>
+
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 50% -15%, #263449 0%, #111721 32%, #050608 75%);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                         "SF Pro Text", Arial, sans-serif;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 520px;
+            margin: auto;
+            padding: 28px 18px 45px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 29px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .status {
+            display: inline-block;
+            margin-top: 10px;
+            margin-bottom: 28px;
+            padding: 7px 14px;
+
+            border-radius: 999px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.08);
+
+            color: #9ca6b5;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .speed {
+            margin-top: 8px;
+            font-size: 88px;
+            line-height: 0.95;
+            font-weight: 800;
+            letter-spacing: -5px;
+        }
+
+        .unit {
+            margin-top: 9px;
+            color: #7d8796;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* AKKU */
+
+        .battery {
+            position: relative;
+
+            width: 158px;
+            height: 158px;
+
+            margin: 35px auto 30px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 29px;
+            font-weight: 800;
+
+            background:
+                radial-gradient(
+                    circle,
+                    #10151d 59%,
+                    transparent 60%
+                );
+
+            border: 10px solid #252b35;
+
+            box-shadow:
+                0 0 35px rgba(255,255,255,0.06),
+                inset 0 0 25px rgba(255,255,255,0.04);
+        }
+
+        .battery::before {
+            content: "";
+
+            position: absolute;
+            inset: -10px;
+
+            border-radius: 50%;
+
+            border: 2px solid rgba(255,255,255,0.18);
+        }
+
+        /* KARTEN */
+
+        .cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+
+            margin-bottom: 20px;
+        }
+
+        .card {
+            min-height: 100px;
+
+            padding: 19px;
+
+            border-radius: 20px;
+
+            background: rgba(255,255,255,0.055);
+            border: 1px solid rgba(255,255,255,0.08);
+
+            box-shadow:
+                0 12px 35px rgba(0,0,0,0.25),
+                inset 0 1px rgba(255,255,255,0.04);
+
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        .card-title {
+            color: #7e8897;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+        }
+
+        .card-value {
+            margin-top: 10px;
+
+            font-size: 19px;
+            font-weight: 750;
+        }
+
+        /* BUTTONS */
+
+        button {
+            width: 100%;
+            height: 58px;
+
+            margin-top: 11px;
+
+            border: none;
+            border-radius: 18px;
+
+            font-size: 16px;
+            font-weight: 750;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .qr {
+            background: rgba(255,255,255,0.075);
+            color: white;
+
+            border: 1px solid rgba(255,255,255,0.10);
+        }
+
+        .connect {
+            background: white;
+            color: #07090c;
+
+            box-shadow:
+                0 8px 28px rgba(255,255,255,0.13);
+        }
+
+        .stop {
+            background: rgba(255,255,255,0.045);
+            color: #9da6b3;
+
+            border: 1px solid rgba(255,255,255,0.07);
+        }
+
+        /* QR SCANNER */
+
+        #qr-reader {
+            display: none;
+
+            margin-top: 18px;
+
+            overflow: hidden;
+
+            border-radius: 22px;
+
+            background: #0d1015;
+
+            border: 1px solid rgba(255,255,255,0.09);
+
+            box-shadow:
+                0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        #qr-reader video {
+            border-radius: 20px;
+        }
+
+        /* QR ERGEBNIS */
+
+        .qr-result {
+            display: none;
+
+            margin-top: 16px;
+            padding: 17px;
+
+            border-radius: 18px;
+
+            background: rgba(255,255,255,0.055);
+
+            border: 1px solid rgba(255,255,255,0.08);
+
+            color: #aeb7c4;
+
+            font-size: 13px;
+
+            word-break: break-all;
+        }
+
+        .qr-result b {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: white;
+            font-size: 14px;
+        }
+
+        /* GERÄT */
+
+        .device {
+            display: none;
+
+            margin-top: 18px;
+            padding: 18px;
+
+            border-radius: 18px;
+
+            background: rgba(255,255,255,0.055);
+
+            border: 1px solid rgba(255,255,255,0.08);
+
+            box-shadow:
+                0 10px 30px rgba(0,0,0,0.25);
+        }
+
+        /* FEHLER */
+
+        .error {
+            margin-top: 15px;
+
+            color: #ff6b6b;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            line-height: 1.4;
+        }
+
+        @media (max-width: 380px) {
+
+            .app {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .speed {
+                font-size: 78px;
+            }
+
+            .battery {
+                width: 140px;
+                height: 140px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <h1>🛴 MY SCOOTER</h1>
+
+    <div class="status" id="status">
+        Nicht verbunden
+    </div>
+
+    <div class="speed" id="speed">
+        0.0
+    </div>
+
+    <div class="unit">
+        km/h
+    </div>
+
+    <div class="battery" id="battery">
+        -- %
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <div class="card-title">
+                DISTANZ
+            </div>
+
+            <div class="card-value" id="distance">
+                -- km
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                STATUS
+            </div>
+
+            <div class="card-value" id="online">
+                OFFLINE
+            </div>
+        </div>
+
+    </div>
+
+    <button class="qr" onclick="startQRScanner()">
+        📷 QR-Code scannen
+    </button>
+
+    <div id="qr-reader"></div>
+
+    <div class="qr-result" id="qrResult">
+        <b>Gescannte Scooter-ID:</b>
+        <span id="qrText"></span>
+    </div>
+
+    <button class="connect" onclick="connectScooter()">
+        🔵 Scooter verbinden
+    </button>
+
+    <button class="stop" onclick="disconnectScooter()">
+        ⏹ Trennen
+    </button>
+
+    <div class="device" id="deviceBox">
+        <div id="deviceName">
+            Gerät
+        </div>
+    </div>
+
+    <div class="error" id="error"></div>
+
+</div>
+
+<script>
+
+let bluetoothDevice = null;
+let qrScanner = null;
+let scooterQR = null;
+
+
+/* =========================
+   QR-CODE SCANNEN
+========================= */
+
+function startQRScanner() {
+
+    const reader = document.getElementById("qr-reader");
+
+    reader.style.display = "block";
+
+    if (qrScanner) {
+        return;
+    }
+
+    qrScanner = new Html5Qrcode("qr-reader");
+
+    qrScanner.start(
+        { facingMode: "environment" },
+
+        {
+            fps: 10,
+            qrbox: {
+                width: 250,
+                height: 250
+            }
+        },
+
+        function(decodedText) {
+
+            scooterQR = decodedText;
+
+            document.getElementById("qrText").innerText =
+                decodedText;
+
+            document.getElementById("qrResult").style.display =
+                "block";
+
+            document.getElementById("status").innerText =
+                "🟢 QR-Code erkannt";
+
+            stopQRScanner();
+        },
+
+        function(errorMessage) {
+        }
+    )
+    .catch(function(error) {
+
+        document.getElementById("error").innerText =
+            "Kamera konnte nicht geöffnet werden: " + error;
+
+    });
+}
+
+
+/* =========================
+   QR SCANNER STOPPEN
+========================= */
+
+function stopQRScanner() {
+
+    if (!qrScanner) {
+        return;
+    }
+
+    qrScanner.stop()
+        .then(function() {
+
+            qrScanner.clear();
+
+            qrScanner = null;
+
+            document.getElementById("qr-reader").style.display =
+                "none";
+
+        })
+        .catch(function(error) {
+
+            console.log(error);
+
+        });
+}
+
+
+/* =========================
+   BLUETOOTH
+========================= */
+
+async function connectScooter() {
+
+    document.getElementById("error").innerText = "";
+
+    if (!navigator.bluetooth) {
+
+        document.getElementById("status").innerText =
+            "❌ Bluetooth nicht unterstützt";
+
+        document.getElementById("online").innerText =
+            "NICHT VERFÜGBAR";
+
+        document.getElementById("error").innerText =
+            "Dieser Browser unterstützt Web Bluetooth nicht.";
+
+        return;
+    }
+
+    try {
+
+        document.getElementById("status").innerText =
+            "🔵 Suche nach Bluetooth-Geräten...";
+
+        document.getElementById("online").innerText =
+            "SUCHE";
+
+        bluetoothDevice =
+            await navigator.bluetooth.requestDevice({
+
+                acceptAllDevices: true
+
+            });
+
+        const name =
+            bluetoothDevice.name || "Unbekanntes Gerät";
+
+        document.getElementById("status").innerText =
+            "🟢 Gerät gefunden";
+
+        document.getElementById("online").innerText =
+            "GEFUNDEN";
+
+        document.getElementById("deviceName").innerText =
+            "🛴 " + name;
+
+        document.getElementById("deviceBox").style.display =
+            "block";
+
+        console.log("Bluetooth-Gerät:", bluetoothDevice);
+
+        console.log("QR-Code:", scooterQR);
+
+    }
+
+    catch (error) {
+
+        console.log(error);
+
+        document.getElementById("status").innerText =
+            "❌ Verbindung abgebrochen";
+
+        document.getElementById("online").innerText =
+            "OFFLINE";
+
+        document.getElementById("error").innerText =
+            error.message ||
+            "Bluetooth-Verbindung fehlgeschlagen.";
+    }
+}
+
+
+/* =========================
+   TRENNEN
+========================= */
+
+function disconnectScooter() {
+
+    if (bluetoothDevice) {
+        bluetoothDevice = null;
+    }
+
+    document.getElementById("status").innerText =
+        "Nicht verbunden";
+
+    document.getElementById("online").innerText =
+        "OFFLINE";
+
+    document.getElementById("deviceBox").style.display =
+        "none";
+
+    document.getElementById("error").innerText =
+        "";
+
+    document.getElementById("battery").innerText =
+        "-- %";
+
+    document.getElementById("speed").innerText =
+        "0.0";
+
+    document.getElementById("distance").innerText =
+        "-- km";
+}
+
+</script>
+
+</body>
+</html>
