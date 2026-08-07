@@ -1,0 +1,286 @@
+<style>
+    * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+            radial-gradient(circle at 50% -10%, #243044 0%, #0b0e13 38%, #050608 75%);
+        color: #fff;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                     "SF Pro Text", Arial, sans-serif;
+        text-align: center;
+    }
+
+    .app {
+        width: 100%;
+        max-width: 520px;
+        margin: auto;
+        padding: 28px 18px 40px;
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.8px;
+    }
+
+    .status {
+        display: inline-block;
+        margin-top: 9px;
+        margin-bottom: 28px;
+        padding: 7px 13px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #9ca5b3;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* Geschwindigkeit */
+
+    .speed {
+        margin-top: 8px;
+        font-size: 92px;
+        line-height: 0.95;
+        font-weight: 800;
+        letter-spacing: -5px;
+    }
+
+    .unit {
+        margin-top: 8px;
+        color: #7f8998;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    /* Akku */
+
+    .battery {
+        position: relative;
+        margin: 34px auto 30px;
+        width: 158px;
+        height: 158px;
+
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 30px;
+        font-weight: 800;
+
+        background:
+            radial-gradient(circle, #11161e 61%, transparent 62%),
+            conic-gradient(#ffffff 0deg, #ffffff 0deg, #252b35 0deg);
+
+        box-shadow:
+            0 0 35px rgba(255,255,255,0.07),
+            inset 0 0 25px rgba(255,255,255,0.03);
+    }
+
+    .battery::before {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Karten */
+
+    .cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        min-height: 95px;
+        padding: 18px;
+        border-radius: 20px;
+
+        background: rgba(255,255,255,0.055);
+        border: 1px solid rgba(255,255,255,0.075);
+
+        box-shadow:
+            0 12px 35px rgba(0,0,0,0.25),
+            inset 0 1px rgba(255,255,255,0.035);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .card-title {
+        color: #7d8795;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+    }
+
+    .card-value {
+        margin-top: 10px;
+        font-size: 19px;
+        font-weight: 750;
+    }
+
+    /* Buttons */
+
+    button {
+        width: 100%;
+        height: 58px;
+        margin-top: 11px;
+
+        border: none;
+        border-radius: 18px;
+
+        font-size: 16px;
+        font-weight: 750;
+
+        cursor: pointer;
+
+        transition:
+            transform 0.15s ease,
+            opacity 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+
+    button:active {
+        transform: scale(0.97);
+    }
+
+    .connect {
+        background: #fff;
+        color: #080a0d;
+
+        box-shadow:
+            0 8px 25px rgba(255,255,255,0.12);
+    }
+
+    .connect:hover {
+        box-shadow:
+            0 10px 30px rgba(255,255,255,0.18);
+    }
+
+    .qr {
+        background: rgba(255,255,255,0.075);
+        color: #fff;
+
+        border: 1px solid rgba(255,255,255,0.09);
+    }
+
+    .stop {
+        background: rgba(255,255,255,0.04);
+        color: #9ca5b3;
+
+        border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* QR Scanner */
+
+    #qr-reader {
+        display: none;
+        margin-top: 18px;
+
+        overflow: hidden;
+
+        border-radius: 22px;
+
+        background: #0d1015;
+
+        border: 1px solid rgba(255,255,255,0.08);
+
+        box-shadow:
+            0 15px 40px rgba(0,0,0,0.35);
+    }
+
+    #qr-reader video {
+        border-radius: 18px;
+    }
+
+    /* Gefundenes Gerät */
+
+    .device {
+        margin-top: 18px;
+        padding: 18px;
+
+        border-radius: 18px;
+
+        background: rgba(255,255,255,0.055);
+
+        border: 1px solid rgba(255,255,255,0.075);
+
+        box-shadow:
+            0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    /* QR Ergebnis */
+
+    .qr-result {
+        margin-top: 16px;
+        padding: 17px;
+
+        border-radius: 18px;
+
+        background: rgba(255,255,255,0.055);
+
+        border: 1px solid rgba(255,255,255,0.075);
+
+        color: #aeb7c4;
+
+        font-size: 13px;
+
+        word-break: break-all;
+    }
+
+    .qr-result b {
+        display: block;
+        margin-bottom: 7px;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    /* Fehler */
+
+    .error {
+        margin-top: 15px;
+
+        color: #ff6b6b;
+
+        font-size: 13px;
+        font-weight: 600;
+
+        line-height: 1.4;
+    }
+
+    /* iPhone */
+
+    @media (max-width: 380px) {
+
+        .app {
+            padding-left: 14px;
+            padding-right: 14px;
+        }
+
+        h1 {
+            font-size: 25px;
+        }
+
+        .speed {
+            font-size: 78px;
+        }
+
+        .battery {
+            width: 140px;
+            height: 140px;
+        }
+    }
+</style>
